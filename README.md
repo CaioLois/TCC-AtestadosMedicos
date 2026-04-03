@@ -161,9 +161,9 @@ A equipe sabe commit e push básico, então o fluxo será simples:
 
 1. Dev 1 cria o repositório no GitHub e sobe a estrutura inicial.
 2. Todos clonam o repositório.
-3. Cada dev do backend cria uma branch com o nome do seu módulo (pesquisar "como criar branch no Git").
-4. Cada dev trabalha na própria branch, faz commit e push nela.
-5. No final de cada dia, Dev 1 é responsável por fazer o merge das branches na main (pesquisar "como fazer merge no Git").
+3. Cada dev do backend cria um fork do repositório (pesquisar "como fazer fork no Git").
+4. Cada dev trabalha no próprio fork, faz commit e push nele, e depois o Pull Request.
+5. No final de cada dia, Dev 1 é responsável por fazer o merge dos PRs na main (pesquisar "como fazer merge no Git").
 6. No dia seguinte, todos fazem `git pull origin main` antes de começar.
 
 **Repositórios:** serão dois repositórios separados — um para o backend e outro para o frontend.
@@ -199,6 +199,50 @@ O que Dev 1 faz nesta fase:
 **Resultado esperado:** repositório no GitHub com o servidor rodando em `localhost:3001/health`, tabelas criadas no banco, e estrutura de pastas pronta.
 
 **Depois disso:** avisa os outros devs para clonarem. Cada um do backend entra na própria pasta e começa.
+
+### FASE 0.1 — Setup Inicial dos Outros Devs (Dev 3, Dev 4 e Dev 5)
+
+Quem: Dev 3, Dev 4 e Dev 5.
+Quando: Assim que Dev 1 avisar que a Fase 0 está concluída.
+Objetivo: Fazer fork do repositório, configurar o ambiente local e criar a própria branch.
+Pré-requisitos: ter Node.js e Git instalados na máquina. Se não tiver, pesquise "como instalar Node.js no Windows" e "como instalar Git no Windows".
+
+Passo 1 — Fazer fork do repositório
+
+Acesse https://github.com/RickMasterBr/TCC-AtestadosMedicos.git no navegador
+Clique no botão Fork no canto superior direito
+Clique em Create fork
+
+Isso cria uma cópia do repositório na sua própria conta do GitHub.
+
+Passo 2 — Clonar o seu fork
+Abra o terminal na pasta onde quer salvar o projeto e rode com a URL do seu fork (não o do Dev 1):
+git clone https://github.com/SEU_USUARIO/TCC-AtestadosMedicos.git
+cd TCC-AtestadosMedicos/backend
+
+Passo 3 — Instalar as dependências
+npm install
+
+Passo 4 — Criar o arquivo .env
+O arquivo .env não sobe no Git por segurança. Crie manualmente dentro da pasta backend:
+DATABASE_URL="mysql://root:SUA_SENHA@localhost:SUA_PORTA/atestados_db"
+Substitua SUA_SENHA pela senha do MySQL da sua máquina e SUA_PORTA pela porta correta (3303 na sala de aula).
+
+Passo 5 — Gerar o Prisma Client
+npx prisma generate
+
+Passo 6 — Confirmar que está tudo funcionando
+node src/server.js
+
+Deve aparecer Servidor rodando na porta 3001. Se aparecer, está pronto para começar.
+Passo 7 — Como enviar o trabalho (Pull Request)
+Ao final de cada sessão de trabalho, após fazer commit e push na sua branch:
+
+Acesse seu fork no GitHub
+Clique em Compare & pull request
+Escreva uma descrição resumindo o que foi feito
+Clique em Create pull request
+Avisa Dev 1 no grupo para ele revisar e fazer o merge
 
 ---
 
