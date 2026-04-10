@@ -19,20 +19,21 @@ async function createCertificate(req, res) {
             });
         }
 
-        // 🧠 Validação dos campos
+        // Validação dos campos
         if (!startDate || !durationDays || !crmNumber) {
             return res.status(400).json({
                 error: 'Todos os campos são obrigatórios'
             });
         }
 
-        // 💾 Salva no banco
+        // Salva no banco
         const certificate = await prisma.medicalCertificate.create({
             data: {
                 startDate: new Date(startDate),
                 durationDays: Number(durationDays),
                 crmNumber,
-                fileUrl: req.file.filename, 
+                // Ajuste importante para acesso via navegador/frontend
+                fileUrl: `/uploads/${req.file.filename}`,
                 userId: req.user.id,
                 status: 'PENDING'
             }

@@ -2,8 +2,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Caminho absoluto da pasta uploads (evita erro de diretório)
+// Caminho absoluto da pasta uploads
 const uploadPath = path.join(__dirname, '../../../uploads');
+
+// Garante que a pasta existe (cria automaticamente se não existir)
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
 
 // Configuração de onde e como os arquivos serão salvos
 const storage = multer.diskStorage({
