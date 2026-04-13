@@ -25,12 +25,21 @@ app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/certificates', certificatesRoutes);
 
-// 🔥 SERVIR ARQUIVOS (ESSENCIAL PARA O DIA 3)
+// SERVIR ARQUIVOS
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'API de Atestados Médicos rodando.' });
+});
+
+// TRATAMENTO GLOBAL DE ERROS
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  return res.status(500).json({
+    error: 'Erro interno do servidor'
+  });
 });
 
 const PORT = process.env.PORT || 3001;

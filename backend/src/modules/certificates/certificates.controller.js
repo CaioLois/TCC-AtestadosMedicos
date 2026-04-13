@@ -64,17 +64,15 @@ async function getUserCertificates(req, res) {
             });
         }
 
-        const certificates = await prisma.medicalCertificate.findMany({
-            where: {
-                userId: req.user.id
-            },
-            orderBy: {
-                startDate: 'desc'
-            }
-        });
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-        return res.json(certificates);
+        const formattedCertificates = certificates.map(cert => ({
+            ...cert,
+            fileUrl: `${baseUrl}${cert.fileUrl}`
+        }));
 
+        return res.json(formattedCertificates);
+        
     } catch (error) {
         console.log(error);
 
