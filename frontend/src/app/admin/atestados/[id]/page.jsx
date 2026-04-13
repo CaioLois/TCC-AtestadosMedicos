@@ -19,8 +19,11 @@ export default function DetalhesAtestado({ params }) {
     async function fetchDetalhes() {
       try {
         setIsLoading(true);
-        const response = await api.get(`/admin/certificates/${id}`);
-        setAtestado(response.data);
+        const response = await api.get(`/admin/certificates`);
+        const todos = response.data.data;
+        const encontrado = todos.find(cert => cert.id === id);
+        if (!encontrado) throw new Error('Não encontrado');
+        setAtestado(encontrado);
       } catch (err) {
         console.error("Erro ao buscar atestado:", err);
         setError("Não foi possível carregar os detalhes do atestado.");
@@ -35,7 +38,8 @@ export default function DetalhesAtestado({ params }) {
   const handleStatusUpdate = async (newStatus) => {
     try {
       setIsProcessing(true);
-      await api.patch(`/admin/certificates/${id}/status`, { status: newStatus });
+      const rota = newStatus === 'APPROVED' ? 'approve' : 'reject';
+      await api.patch(`/admin/certificates/${id}/${rota}`);
       alert(`Atestado ${newStatus === 'APPROVED' ? 'Aprovado' : 'Recusado'} com sucesso!`);
       // Atualiza o estado local para forçar a re-renderização e mostrar a nova tela de "Analisado"
       setAtestado(prev => ({ ...prev, status: newStatus }));
@@ -84,15 +88,15 @@ export default function DetalhesAtestado({ params }) {
     );
   }
 
-  const fileUrl = atestado.fileUrl ? `http://localhost:3000${atestado.fileUrl}` : null;
+  const fileUrl = atestado.fileUrl ? `http://localhost:3001${atestado.fileUrl}` : null;
   const isPending = atestado.status === 'PENDING';
   const isApproved = atestado.status === 'APPROVED';
 
   // Configuração visual da Badge de Status Final (para a tela de Analisado)
-  const statusColorClass = isApproved 
-    ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
+  const statusColorClass = isApproved
+    ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
     : 'bg-red-50 border-red-200 text-red-700';
-  
+
   const statusIcon = isApproved ? (
     <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -108,7 +112,7 @@ export default function DetalhesAtestado({ params }) {
       <NavBarAdmin />
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-10">
-        
+
         {/* Cabeçalho Base */}
         <div className="mb-8">
           <Link href="/admin/atestados" className="text-sm text-gray-500 hover:text-[#00a8ac] hover:underline mb-4 inline-block transition-colors">
@@ -123,7 +127,7 @@ export default function DetalhesAtestado({ params }) {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row">
-          
+
           {/* LADO ESQUERDO: Visualizador do Documento (Permanece igual) */}
           <div className="w-full md:w-1/2 bg-gray-100 border-r border-gray-200 p-8 flex flex-col">
             <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
@@ -132,7 +136,7 @@ export default function DetalhesAtestado({ params }) {
               </svg>
               Documento Anexado
             </h3>
-            
+
             <div className="flex-1 bg-white border border-gray-300 rounded-lg overflow-hidden flex items-center justify-center min-h-[400px]">
               {fileUrl ? (
                 <embed src={fileUrl} className="w-full h-full object-contain" type="application/pdf" />
@@ -140,10 +144,10 @@ export default function DetalhesAtestado({ params }) {
                 <span className="text-gray-400 text-sm italic">Nenhum arquivo enviado</span>
               )}
             </div>
-            
+
             {fileUrl && (
-              <a 
-                href={fileUrl} 
+              <a
+                href={fileUrl}
                 download
                 target="_blank"
                 rel="noreferrer"
@@ -156,9 +160,9 @@ export default function DetalhesAtestado({ params }) {
 
           {/* LADO DIREITO: Varia com base no Status */}
           <div className="w-full md:w-1/2 p-8 flex flex-col justify-between">
-            
+
             <div className="space-y-6">
-              
+
               {/* STATUS EM DESTAQUE (Apenas se já estiver avaliado, baseado na sua imagem) */}
               {!isPending && (
                 <div className={`p-4 border rounded-lg flex items-center justify-between mb-2 ${statusColorClass}`}>
@@ -186,7 +190,7 @@ export default function DetalhesAtestado({ params }) {
               {/* Detalhes do Afastamento */}
               <div>
                 <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Detalhes do Afastamento</h2>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
                     <span className="block text-xs text-gray-500 font-medium mb-1">Início</span>
@@ -215,7 +219,7 @@ export default function DetalhesAtestado({ params }) {
                   )}
                 </div>
               </div>
-              
+
               {atestado.observacoes && (
                 <div>
                   <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Observações</h2>

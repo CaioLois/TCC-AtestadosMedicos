@@ -39,10 +39,10 @@ export default function Dashboard() {
 
   // 3. Cálculos Dinâmicos com base nos dados do backend
   const totalAtestados = atestados.length;
-  const atestadosAprovados = atestados.filter(a => a.status === 'Aprovado').length;
+  const atestadosAprovados = atestados.filter(a => a.status === 'APPROVED').length;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <NavBar />
 
       <main className="w-full flex-1 px-8 py-10 flex flex-col gap-6">
@@ -105,16 +105,17 @@ export default function Dashboard() {
               {atestados.map((atestado) => (
                 <div key={atestado.id} className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                   <div className="flex items-start gap-4">
-                    <div className={`w-2.5 h-2.5 rounded-full mt-1.5 ${atestado.status === 'Aprovado' ? 'bg-[#1a9e9e]' : atestado.status === 'Recusado' ? 'bg-red-500' : 'bg-yellow-500'}`}></div>
+                    <div className={`w-2.5 h-2.5 rounded-full mt-1.5 ${atestado.status === 'APPROVED' ? 'bg-[#1a9e9e]' : atestado.status === 'REJECTED' ? 'bg-red-500' : 'bg-yellow-500'}`}></div>
                     <div className="flex flex-col">
-                      <span className="text-sm text-gray-800 font-medium">{atestado.motivo}</span>
+                      <span className="text-sm text-gray-800 font-medium">Atestado Médico</span>
                       <span className="text-sm text-gray-400 mt-1">
-                        {atestado.dataInicio} -- {atestado.dataFim} - {atestado.dias} dias
+                        {new Date(atestado.startDate).toLocaleDateString('pt-BR')} —{' '}
+                        {new Date(atestado.endDate).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                   </div>
-                  <span className={`text-sm font-medium ${atestado.status === 'Aprovado' ? 'text-[#1a9e9e]' : atestado.status === 'Recusado' ? 'text-red-500' : 'text-yellow-600'}`}>
-                    {atestado.status}
+                  <span className={`text-sm font-medium ${atestado.status === 'APPROVED' ? 'text-[#1a9e9e]' : atestado.status === 'REJECTED' ? 'text-red-500' : 'text-yellow-600'}`}>
+                    {atestado.status === 'APPROVED' ? 'Aprovado' : atestado.status === 'REJECTED' ? 'Recusado' : 'Pendente'}
                   </span>
                 </div>
               ))}
